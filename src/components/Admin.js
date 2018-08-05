@@ -8,6 +8,10 @@ class Admin extends React.Component {
 			</footer>
 		)
 	}
+
+	static propTypes = {
+		chargerExemple: React.PropTypes.func.isRequired
+	}
 }
 
 export default Admin;

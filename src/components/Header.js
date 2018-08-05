@@ -12,6 +12,10 @@ class Header extends React.Component {
 			</header>
 		)
 	}
+
+	static propTypes = {
+		pseudo: React.PropTypes.string.isRequired
+	}
 }
 
 export default Header;
