@@ -1,7 +1,22 @@
 import React from 'react';
 import AjouterRecette from './AjouterRecette';
+import base from '../base';
 
 class Admin extends React.Component {
+
+	state = {
+		uid: null,
+		owner: null
+	}
+
+	componentDidMount() {
+		base.onAuth(user => {
+			if(user){
+				this.traitementConnexion(null, {user});
+			};
+		});
+	}
+
 	traiterChangement = (event, key) => {
 		const recette = this.props.recettes[key];
 		const majRecette = {
@@ -9,6 +24,43 @@ class Admin extends React.Component {
 			[event.target.name]: event.target.value
 		};
 		this.props.majRecette(key, majRecette);
+	};
+
+	connexion = provider => {
+		base.authWithOAuthPopup(provider, this.traitementConnexion);
+	}
+
+	deconnexion = () => {
+		base.unauth();
+		this.setState({
+			uid: null
+		});
+	};
+
+	traitementConnexion = (err, authData) => {
+		if(err) {
+			console.log(err);
+			return;
+		}
+
+		// Récupérer le nom de la boîte
+		const boxRef = base.database().ref(this.props.pseudo);
+
+		// Demander à Firebase les données
+		boxRef.once('value', snapshot => {
+			const data = snapshot.val() || {};
+
+			if(!data.owner) {
+				boxRef.set({
+					owner: authData.user.uid
+				});
+			}
+
+			this.setState({
+				uid: authData.user.uid,
+				owner: data.owner || authData.user.uid
+			});
+		});
 	};
 
 	renderAdmin = (key) => {
@@ -31,7 +83,37 @@ class Admin extends React.Component {
 		)
 	};
 
+	renderLogin = () => {
+		return (
+			<div className="login">
+				<h2>Connecte toi pour créer tes recettes !</h2>
+				<button className="facebook-button" onClick={() => this.connexion('facebook')} >Me connecter avec Facebook</button>
+				<button className="twitter-button" onClick={() => this.connexion('twitter')} >Me connecter avec Twitter</button>
+			</div>
+		)
+	};
+
 	render() {
+
+		const deconnexion = <button onClick={this.deconnexion}>Déconnexion</button>;
+
+		// Si il existe un propirétaire
+		if(!this.state.uid) {
+			return (
+				<div>{this.renderLogin()}</div>
+			)
+		}
+
+		// Est ce que c'est le propirétaire
+		if(this.state.uid !== this.state.owner) {
+			return (
+				<div className="login">
+					{this.renderLogin()}
+					<p>⚠ Vous n'êtes pas propriétaire de cette boîte à recettes.</p>
+				</div>
+			)
+		}
+
 		const adminCards = Object
 			.keys(this.props.recettes)
 			.map(this.renderAdmin);
@@ -42,6 +124,7 @@ class Admin extends React.Component {
 				{adminCards}
 				<footer>
 					<button onClick={this.props.chargerExemple}>Remplir</button>
+					{deconnexion}
 				</footer>
 			</div>
 		)
@@ -52,7 +135,8 @@ class Admin extends React.Component {
 		chargerExemple: React.PropTypes.func.isRequired,
 		ajouterRecette: React.PropTypes.func.isRequired,
 		majRecette: React.PropTypes.func.isRequired,
-		supprimerRecette: React.PropTypes.func.isRequired
+		supprimerRecette: React.PropTypes.func.isRequired,
+		pseudo: React.PropTypes.string.isRequired
 	};
 }
 
