@@ -3,7 +3,7 @@ import React from 'react';
 class Card extends React.Component {
 	render() {
 		const ingredients = this.props.details.ingredients
-			.split(', ')
+			.split(',')
 			.map((item, key) => <li key={key}>{item}</li>);
 		const instructions = this.props.details.instructions
 			.split('\n')
