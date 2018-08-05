@@ -18,7 +18,7 @@ class Card extends React.Component {
 				/>
 				</div>
 				<div className="recette">
-					<h2></h2>
+					<h2>{this.props.details.nom}</h2>
 					<ul className="liste-ingredients">
 						{ingredients}
 					</ul>

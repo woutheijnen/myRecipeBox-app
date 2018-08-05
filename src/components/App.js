@@ -34,7 +34,12 @@ class App extends React.Component {
 		const recettes = {...this.state.recettes};
 		const timestamp = Date.now();
 		recettes[`recette-${timestamp}`] = recette;
-		console.log(recettes);
+		this.setState({ recettes });
+	}
+
+	majRecette = (key, recette) => {
+		const recettes = {...this.state.recettes};
+		recettes[key] = recette;
 		this.setState({ recettes });
 	}
 
@@ -53,8 +58,10 @@ class App extends React.Component {
 					{cards}
 				</div>
 				<Admin
+					recettes={this.state.recettes}
 					chargerExemple={this.chargerExemple}
 					ajouterRecette={this.ajouterRecette}
+					majRecette={this.majRecette}
 				/>
 			</div>
 		)
