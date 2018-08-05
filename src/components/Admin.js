@@ -16,7 +16,7 @@ class Admin extends React.Component {
 
 		return (
 			<div className="card" key={key}>
-				<form className="admin-form">
+				<form className="admin-form" >
 					<input type="text" name="nom" placeholder="Nom de la recette"
 						value={recette.nom} onChange={e => this.traiterChangement(e, key)} />
 					<input type="text" name="image" placeholder="Adresse de l'image"
@@ -26,6 +26,7 @@ class Admin extends React.Component {
 					<textarea name="instructions" rows="15" placeholder="Liste des instructions (une par ligne)"
 					value={recette.instructions} onChange={e => this.traiterChangement(e, key)} ></textarea>
 				</form>
+				<button onClick={() => this.props.supprimerRecette(key)}>Supprimer</button>
 			</div>
 		)
 	};
@@ -50,7 +51,8 @@ class Admin extends React.Component {
 		recettes: React.PropTypes.object.isRequired,
 		chargerExemple: React.PropTypes.func.isRequired,
 		ajouterRecette: React.PropTypes.func.isRequired,
-		majRecette: React.PropTypes.func.isRequired
+		majRecette: React.PropTypes.func.isRequired,
+		supprimerRecette: React.PropTypes.func.isRequired
 	};
 }
 
